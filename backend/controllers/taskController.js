@@ -28,7 +28,12 @@ const getTasks = async (req, res, next) => {
 
 const getTaskById = async (req, res, next) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, user: req.user.id });
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid task ID' });
+    }
+
+    const taskId = new mongoose.Types.ObjectId(req.params.id);
+    const task = await Task.findOne({ _id: taskId, user: req.user.id });
 
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
@@ -54,8 +59,13 @@ const createTask = async (req, res, next) => {
 
 const updateTask = async (req, res, next) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid task ID' });
+    }
+
+    const taskId = new mongoose.Types.ObjectId(req.params.id);
     const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+      { _id: taskId, user: req.user.id },
       req.body,
       { new: true, runValidators: true }
     );
@@ -75,7 +85,12 @@ const updateTask = async (req, res, next) => {
 
 const deleteTask = async (req, res, next) => {
   try {
-    const task = await Task.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid task ID' });
+    }
+
+    const taskId = new mongoose.Types.ObjectId(req.params.id);
+    const task = await Task.findOneAndDelete({ _id: taskId, user: req.user.id });
 
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });

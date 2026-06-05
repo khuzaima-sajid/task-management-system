@@ -7,7 +7,7 @@ const generateToken = (userId) =>
 const register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne().where('email').equals(email);
 
     if (existingUser) {
       return res.status(409).json({ message: 'User already exists' });
@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne().where('email').equals(email);
 
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });

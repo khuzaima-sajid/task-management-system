@@ -1,6 +1,7 @@
 const express = require('express');
 const Joi = require('joi');
 const auth = require('../middleware/auth');
+const { taskLimiter } = require('../middleware/rateLimiter');
 const validate = require('../middleware/validation');
 const {
   getTasks,
@@ -26,6 +27,7 @@ const partialTaskSchema = Joi.object({
   dueDate: Joi.date().iso().allow(null, ''),
 }).min(1);
 
+router.use(taskLimiter);
 router.use(auth);
 
 router.get('/', getTasks);
